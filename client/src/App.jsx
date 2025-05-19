@@ -17,8 +17,8 @@ function App() {
     const getImage = async () => {
       if (file) {
         const data = new FormData();  // FormData is used to send the file to the server by default,
-        data.append('name', file.name);
-        data.append('file', file);
+        data.append('name', file.name); // to send the file name to the server
+        data.append('file', file); // to send the file to the server
         const response = await uploadFile(data);
         setPath(response.path);
       }

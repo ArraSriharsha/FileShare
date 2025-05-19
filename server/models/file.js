@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const fileSchema = new mongoose.Schema({
+const FileSchema = new mongoose.Schema({
     path:{
         type:String,
         required:true
@@ -16,6 +16,6 @@ const fileSchema = new mongoose.Schema({
     }
 })
 
-const File = mongoose.model('File',fileSchema);
+const File = mongoose.model('file',FileSchema); // 'file' is the name of collection in MongoDB also it is made plural in the database
 
 export default File;

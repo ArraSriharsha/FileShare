@@ -21,9 +21,9 @@ const uploadImage = async(req,res)=>{
     }
 }
 const getImage = async(req,res)=>{
-    try {
-        const {fileId} = req.params; // destructuring equivalent to req.params.fileId
-        const file = await File.findById(fileId); //can also be written as File.findOne({req.params.fileId})
+    try {                            //fileId becuase in the routes file we have used fileId as a parameter
+        //const {fileId} = req.params; // destructuring equivalent to req.params.fileId
+        const file = await File.findById(req.params.fileId); //can also be written as File.findOne({req.params.fileId})
         file.downloadCount++;
         await file.save();
         res.download(file.path,file.name);// express function to download the file in response

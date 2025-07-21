@@ -66,7 +66,7 @@ export default function Auth() {
             { 
               theme: 'outline', 
               size: 'large',
-              width: '100%',
+              width: '280',
               text: 'continue_with'
             }
           );
@@ -280,7 +280,7 @@ export default function Auth() {
                   <div className="h-px flex-1 bg-gray-400" />
                 </div>
               </div>
-              <div className="mt-3 sm:mt-4 w-full">
+              <div className="mt-3 sm:mt-4 w-full flex justify-center">
                 <div id="google-signin-button"></div>
                 {isGoogleLoading && (
                   <div className="mt-2 text-center">

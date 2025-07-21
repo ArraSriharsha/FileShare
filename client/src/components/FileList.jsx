@@ -44,8 +44,7 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
 
   const handleShare = async (file) => {
     try {
-      const response = await getShareLink(file._id);
-      const link = response.data.shareLink;
+      const link = `${window.location.origin}/shared/${file._id}`;
       await navigator.clipboard.writeText(link);
       setCopiedLink(file._id);
       setTimeout(() => setCopiedLink(null), 2000);
@@ -151,7 +150,7 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
                     <button
                       onClick={() => handleShare(file)}
                       className="p-1.5 sm:p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
-                      title="Share"
+                      title="Share Preview Link"
                     >
                       {copiedLink === file._id ? (
                         <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />

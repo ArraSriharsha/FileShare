@@ -153,7 +153,7 @@ export default function Auth() {
     setIsLoading(true);
     try {
       const response = await register(formData);
-      if (response && response.status === 200) {
+      if (response && response.status === 201) {
         // Success - cookies are automatically set by the server
         window.location.href = '/';
       } else {

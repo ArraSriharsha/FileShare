@@ -91,7 +91,7 @@ const previewFile = async (req, res) => {
             Bucket: process.env.R2_BUCKET,
             Key: key,
         }));
-        res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || '*');
+        res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || 'https://www.airfetch.online');
         res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Permissions-Policy', 'fullscreen=*');
         const fileExtension = file.name.split('.').pop()?.toLowerCase();

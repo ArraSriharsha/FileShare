@@ -152,7 +152,7 @@ const getShareLink = async (req, res) => {
         if (!file) {
             return res.status(404).json({ success: false, message: 'File not found' });
         }
-        const shareLink = `http://localhost:8000/files/${file._id}/download`;
+        const shareLink = `https://api.airfetch.online/files/${file._id}/download`;
         res.status(200).json({ shareLink });
     } catch (error) {
         console.error('Error in getShareLink function', error);

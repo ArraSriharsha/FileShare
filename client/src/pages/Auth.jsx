@@ -192,7 +192,7 @@ export default function Auth() {
     setIsLoading(true);
     try {
       // Call API to set password for Google OAuth user
-      const response = await fetch('http://localhost:8000/auth/set-password', {
+      const response = await fetch('https://api.airfetch.online/auth/set-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

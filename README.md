@@ -1,4 +1,4 @@
-# Air Fetch
+# ![logo](/client/public/icon.svg)  Air Fetch | Cloud Storage
 
 A modern, full-stack file sharing and storage platform.
 
@@ -45,9 +45,9 @@ A modern, full-stack file sharing and storage platform.
 ## 🛠️ Tech Stack
 
 - **Frontend:** React, Tailwind CSS, Axios, React Router
-- **Backend:** Node.js, Express, MongoDB (Mongoose), JWT, Multer, Cloud Storage (R2/S3-ready)
+- **Backend:** Node.js, Express, MongoDB (Mongoose), JWT, Multer, Cloudfare R2 Storage
 - **Auth:** JWT, Google OAuth
-- **Deployment:** Vercel (frontend), Render/Cloudflare (backend)
+- **Deployment:** Vercel (frontend), Render (backend)
 
 ## ⚡ Quick Start
 
@@ -58,7 +58,6 @@ cd airfetch
 ```
 
 ### 2. Setup Environment Variables
-- Copy `.env.example` to `.env` in both `client/` and `server/` folders.
 - Set your MongoDB URI, JWT secret, Google OAuth client ID, and (optionally) cloud storage credentials.
 
 ### 3. Install Dependencies
@@ -116,4 +115,10 @@ cd ../server && npm install
 - File upload, preview, and download routes interact directly with R2 for efficient, scalable storage.
 - The architecture is ready for direct-to-R2 uploads (bypassing server RAM/disk for large files).
 - Files can be served via a CDN (e.g., Cloudflare) for fast, global access.
-- Easily switch to other S3-compatible storage if needed. 
+- Easily switch to other S3-compatible storage if needed.
+
+## License
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.

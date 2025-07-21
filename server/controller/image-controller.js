@@ -91,7 +91,9 @@ const previewFile = async (req, res) => {
             Bucket: process.env.R2_BUCKET,
             Key: key,
         }));
-        res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+        res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || '*');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
+        res.setHeader('Permissions-Policy', 'fullscreen=*');
         const fileExtension = file.name.split('.').pop()?.toLowerCase();
         const contentTypeMap = {
             'py': 'text/plain',
@@ -121,7 +123,19 @@ const previewFile = async (req, res) => {
             'kt': 'text/plain',
             'pdf': 'application/pdf',
         };
-        if ((file.fileType && file.fileType.startsWith('text/')) || contentTypeMap[fileExtension]) {
+        if (fileExtension === 'pdf' || file.fileType === 'application/pdf') {
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+            if (s3Response.Body instanceof stream.Readable) {
+                return s3Response.Body.pipe(res);
+            } else {
+                let data = Buffer.from([]);
+                for await (const chunk of s3Response.Body) {
+                    data = Buffer.concat([data, chunk]);
+                }
+                return res.end(data);
+            }
+        } else if ((file.fileType && file.fileType.startsWith('text/')) || contentTypeMap[fileExtension]) {
             res.setHeader('Content-Type', contentTypeMap[fileExtension] || file.fileType || 'text/plain');
             let data = '';
             for await (const chunk of s3Response.Body) {

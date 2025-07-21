@@ -34,7 +34,7 @@ export const register = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: true, // Set to true in production with HTTPS
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
         
@@ -91,7 +91,7 @@ export const login = async (req, res) => {
         res.cookie('token', token, {
             httpOnly: true,
             secure: true, // Set to true in production with HTTPS
-            sameSite: 'strict',
+            sameSite: 'none',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
         
@@ -243,7 +243,7 @@ export const googleAuth = async (req, res) => {
     res.cookie('token', jwtToken, {
       httpOnly: true,
       secure: true, // Set to true in production with HTTPS
-      sameSite: 'strict',
+      sameSite: 'none',
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 

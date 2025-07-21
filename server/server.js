@@ -1,9 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 import fileRouter from './routes/file.js';
 import authRouter from './routes/auth.js';
 import DBConnection from './database/db.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 

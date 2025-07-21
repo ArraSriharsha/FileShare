@@ -264,7 +264,14 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
         file.name.endsWith('.ts') || file.name.endsWith('.jsx') || file.name.endsWith('.tsx') ||
         file.name.endsWith('.html') || file.name.endsWith('.css') || file.name.endsWith('.scss') ||
         file.name.endsWith('.json') || file.name.endsWith('.xml') || file.name.endsWith('.sql') ||
-        file.name.endsWith('.sh') || file.name.endsWith('.bash') || file.name.endsWith('.md')) {
+        file.name.endsWith('.sh') || file.name.endsWith('.bash') || file.name.endsWith('.md') ||
+        file.name.endsWith('.c') || file.name.endsWith('.h') || file.name.endsWith('.hpp') ||
+        file.name.endsWith('.cc') || file.name.endsWith('.cxx') || file.name.endsWith('.m') ||
+        file.name.endsWith('.mm') || file.name.endsWith('.swift') || file.name.endsWith('.kt') ||
+        file.name.endsWith('.rs') || file.name.endsWith('.go') || file.name.endsWith('.rb') ||
+        file.name.endsWith('.pl') || file.name.endsWith('.r') || file.name.endsWith('.scala') ||
+        file.name.endsWith('.clj') || file.name.endsWith('.hs') || file.name.endsWith('.elm') ||
+        file.name.endsWith('.fs') || file.name.endsWith('.fsx')) {
       return (
         <div className="w-full h-32 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
           <div className="text-center">
@@ -302,26 +309,26 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
         {files.map((file) => (
           <div
             key={file._id}
-            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700 hover:border-blue-500/50 transition-all duration-300 group hover:shadow-lg hover:shadow-blue-500/10"
+            className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-gray-700 hover:border-blue-500/50 transition-all duration-300 group hover:shadow-lg hover:shadow-blue-500/10"
           >
             {/* File Preview */}
-            <div className="mb-4 relative">
+            <div className="mb-3 sm:mb-4 relative">
               {renderPreview(file)}
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-lg" />
             </div>
 
             {/* File Info */}
-            <div className="space-y-2">
+            <div className="space-y-1.5 sm:space-y-2">
               {editingFile === file._id ? (
                 <div className="flex space-x-1">
                   <input
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
-                    className="flex-1 bg-gray-700 text-white text-sm rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 bg-gray-700 text-white text-xs sm:text-sm rounded px-1.5 sm:px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSaveEdit();
                       if (e.key === 'Escape') handleCancelEdit();
@@ -330,65 +337,65 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                   />
                   <button
                     onClick={handleSaveEdit}
-                    className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                    className="px-1.5 sm:px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 flex-shrink-0"
                   >
                     <Check className="w-3 h-3" />
                   </button>
                 </div>
               ) : (
-                <h3 className="font-medium text-white text-sm truncate">{file.name}</h3>
+                <h3 className="font-medium text-white text-xs sm:text-sm truncate">{file.name}</h3>
               )}
               
               <div className="flex items-center justify-between text-xs text-gray-400">
-                <span>{formatFileSize(file.size)}</span>
-                <span>{formatDate(file.uploadDate)}</span>
+                <span className="truncate">{formatFileSize(file.size)}</span>
+                <span className="hidden sm:block">{formatDate(file.uploadDate)}</span>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
-              <div className="flex space-x-2">
+            <div className="flex justify-between items-center mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-gray-700">
+              <div className="flex space-x-1 sm:space-x-2">
                 <button
                   onClick={() => handlePreview(file)}
-                  className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                   title="Preview"
                 >
-                  <Eye className="w-4 h-4" />
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => handleDownload(file)}
-                  className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
                   title="Download"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => handleShare(file)}
-                  className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                   title="Share"
                 >
                   {copiedLink === file._id ? (
-                    <Check className="w-4 h-4 text-green-400" />
+                    <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
                   ) : (
-                    <Share2 className="w-4 h-4" />
+                    <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
                   )}
                 </button>
               </div>
               
-              <div className="flex space-x-2">
+              <div className="flex space-x-1 sm:space-x-2">
                 <button
                   onClick={() => handleEdit(file)}
-                  className="p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
                   title="Rename"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
                 <button
                   onClick={() => onFileDelete(file._id)}
-                  className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                   title="Delete"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>
@@ -398,19 +405,19 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
 
       {/* Preview Modal */}
       {previewFile && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800 rounded-xl max-w-6xl max-h-[95vh] w-full overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-gray-700">
-              <h3 className="text-white font-medium text-lg">{previewFile.name}</h3>
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+          <div className="bg-gray-800 rounded-xl max-w-4xl sm:max-w-6xl max-h-[95vh] w-full overflow-hidden">
+            <div className="flex items-center justify-between p-3 sm:p-6 border-b border-gray-700">
+              <h3 className="text-white font-medium text-sm sm:text-lg truncate">{previewFile.name}</h3>
               <button
                 onClick={() => setPreviewFile(null)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-white flex-shrink-0"
               >
-                <X className="w-8 h-8" />
+                <X className="w-6 h-6 sm:w-8 sm:h-8" />
               </button>
             </div>
             
-            <div className="p-6 max-h-[calc(95vh-140px)] overflow-auto">
+            <div className="p-3 sm:p-6 max-h-[calc(95vh-120px)] overflow-auto">
               {/* Image Preview */}
               {previewFile.type.startsWith('image/') && (
                 <img
@@ -432,11 +439,11 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               
               {/* Audio Preview */}
               {previewFile.type.startsWith('audio/') && (
-                <div className="text-center py-8">
-                  <div className="w-32 h-32 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Music className="w-16 h-16 text-white" />
+                <div className="text-center py-4 sm:py-8">
+                  <div className="w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <Music className="w-8 h-8 sm:w-16 sm:h-16 text-white" />
                   </div>
-                  <h4 className="text-white font-medium mb-4">{previewFile.name}</h4>
+                  <h4 className="text-white font-medium mb-2 sm:mb-4 text-sm sm:text-base">{previewFile.name}</h4>
                   <audio
                     src={`http://localhost:8000/files/${previewFile._id}/preview`}
                     controls
@@ -447,7 +454,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               
               {/* PDF Preview */}
               {previewFile.type === 'application/pdf' && (
-                <div className="w-full h-[70vh]">
+                <div className="w-full h-[60vh] sm:h-[70vh]">
                   <iframe
                     src={`http://localhost:8000/files/${previewFile._id}/preview`}
                     className="w-full h-full bg-white rounded"
@@ -458,17 +465,17 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               
               {/* Document Preview (Word, Excel, PowerPoint) */}
               {(previewFile.type.includes('document') || previewFile.type.includes('spreadsheet') || previewFile.type.includes('presentation')) && (
-                <div className="text-center py-8">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <FileText className="w-16 h-16 text-white" />
+                <div className="text-center py-4 sm:py-8">
+                  <div className="w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <FileText className="w-8 h-8 sm:w-16 sm:h-16 text-white" />
                   </div>
-                  <h4 className="text-white font-medium mb-2">{previewFile.name}</h4>
-                  <p className="text-gray-400 mb-4">Document preview not available</p>
+                  <h4 className="text-white font-medium mb-2 text-sm sm:text-base">{previewFile.name}</h4>
+                  <p className="text-gray-400 mb-4 text-xs sm:text-sm">Document preview not available</p>
                   <button
                     onClick={() => handleDownload(previewFile)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 inline mr-2" />
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
                     Download to View
                   </button>
                 </div>
@@ -476,17 +483,17 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               
               {/* Archive Preview */}
               {(previewFile.type.includes('zip') || previewFile.type.includes('rar') || previewFile.type.includes('tar') || previewFile.type.includes('7z')) && (
-                <div className="text-center py-8">
-                  <div className="w-32 h-32 bg-gradient-to-br from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <File className="w-16 h-16 text-white" />
+                <div className="text-center py-4 sm:py-8">
+                  <div className="w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <File className="w-8 h-8 sm:w-16 sm:h-16 text-white" />
                   </div>
-                  <h4 className="text-white font-medium mb-2">{previewFile.name}</h4>
-                  <p className="text-gray-400 mb-4">Archive preview not available</p>
+                  <h4 className="text-white font-medium mb-2 text-sm sm:text-base">{previewFile.name}</h4>
+                  <p className="text-gray-400 mb-4 text-xs sm:text-sm">Archive preview not available</p>
                   <button
                     onClick={() => handleDownload(previewFile)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 inline mr-2" />
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
                     Download to Extract
                   </button>
                 </div>
@@ -500,7 +507,14 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                 previewFile.name.endsWith('.ts') || previewFile.name.endsWith('.jsx') || previewFile.name.endsWith('.tsx') ||
                 previewFile.name.endsWith('.html') || previewFile.name.endsWith('.css') || previewFile.name.endsWith('.scss') ||
                 previewFile.name.endsWith('.json') || previewFile.name.endsWith('.xml') || previewFile.name.endsWith('.sql') ||
-                previewFile.name.endsWith('.sh') || previewFile.name.endsWith('.bash') || previewFile.name.endsWith('.md')) && (
+                previewFile.name.endsWith('.sh') || previewFile.name.endsWith('.bash') || previewFile.name.endsWith('.md') ||
+                previewFile.name.endsWith('.c') || previewFile.name.endsWith('.h') || previewFile.name.endsWith('.hpp') ||
+                previewFile.name.endsWith('.cc') || previewFile.name.endsWith('.cxx') || previewFile.name.endsWith('.m') ||
+                previewFile.name.endsWith('.mm') || previewFile.name.endsWith('.swift') || previewFile.name.endsWith('.kt') ||
+                previewFile.name.endsWith('.rs') || previewFile.name.endsWith('.go') || previewFile.name.endsWith('.rb') ||
+                previewFile.name.endsWith('.pl') || previewFile.name.endsWith('.r') || previewFile.name.endsWith('.scala') ||
+                previewFile.name.endsWith('.clj') || previewFile.name.endsWith('.hs') || previewFile.name.endsWith('.elm') ||
+                previewFile.name.endsWith('.fs') || previewFile.name.endsWith('.fsx')) && (
                 <CodePreview file={previewFile} />
               )}
               
@@ -511,7 +525,14 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                !previewFile.name.endsWith('.ts') && !previewFile.name.endsWith('.jsx') && !previewFile.name.endsWith('.tsx') &&
                !previewFile.name.endsWith('.html') && !previewFile.name.endsWith('.css') && !previewFile.name.endsWith('.scss') &&
                !previewFile.name.endsWith('.json') && !previewFile.name.endsWith('.xml') && !previewFile.name.endsWith('.sql') &&
-               !previewFile.name.endsWith('.sh') && !previewFile.name.endsWith('.bash') && !previewFile.name.endsWith('.md') && (
+               !previewFile.name.endsWith('.sh') && !previewFile.name.endsWith('.bash') && !previewFile.name.endsWith('.md') &&
+               !previewFile.name.endsWith('.c') && !previewFile.name.endsWith('.h') && !previewFile.name.endsWith('.hpp') &&
+               !previewFile.name.endsWith('.cc') && !previewFile.name.endsWith('.cxx') && !previewFile.name.endsWith('.m') &&
+               !previewFile.name.endsWith('.mm') && !previewFile.name.endsWith('.swift') && !previewFile.name.endsWith('.kt') &&
+               !previewFile.name.endsWith('.rs') && !previewFile.name.endsWith('.go') && !previewFile.name.endsWith('.rb') &&
+               !previewFile.name.endsWith('.pl') && !previewFile.name.endsWith('.r') && !previewFile.name.endsWith('.scala') &&
+               !previewFile.name.endsWith('.clj') && !previewFile.name.endsWith('.hs') && !previewFile.name.endsWith('.elm') &&
+               !previewFile.name.endsWith('.fs') && !previewFile.name.endsWith('.fsx') && (
                 <CodePreview file={previewFile} />
               )}
               
@@ -523,18 +544,29 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                !previewFile.type.includes('javascript') && !previewFile.type.includes('python') && !previewFile.type.includes('java') && 
                !previewFile.type.includes('cpp') && !previewFile.type.includes('csharp') && !previewFile.type.includes('php') &&
                !previewFile.name.endsWith('.js') && !previewFile.name.endsWith('.py') && !previewFile.name.endsWith('.java') &&
-               !previewFile.name.endsWith('.cpp') && !previewFile.name.endsWith('.cs') && !previewFile.name.endsWith('.php') && (
-                <div className="text-center py-8">
-                  <div className="w-32 h-32 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <File className="w-16 h-16 text-gray-300" />
+               !previewFile.name.endsWith('.cpp') && !previewFile.name.endsWith('.cs') && !previewFile.name.endsWith('.php') &&
+               !previewFile.name.endsWith('.ts') && !previewFile.name.endsWith('.jsx') && !previewFile.name.endsWith('.tsx') &&
+               !previewFile.name.endsWith('.html') && !previewFile.name.endsWith('.css') && !previewFile.name.endsWith('.scss') &&
+               !previewFile.name.endsWith('.json') && !previewFile.name.endsWith('.xml') && !previewFile.name.endsWith('.sql') &&
+               !previewFile.name.endsWith('.sh') && !previewFile.name.endsWith('.bash') && !previewFile.name.endsWith('.md') &&
+               !previewFile.name.endsWith('.c') && !previewFile.name.endsWith('.h') && !previewFile.name.endsWith('.hpp') &&
+               !previewFile.name.endsWith('.cc') && !previewFile.name.endsWith('.cxx') && !previewFile.name.endsWith('.m') &&
+               !previewFile.name.endsWith('.mm') && !previewFile.name.endsWith('.swift') && !previewFile.name.endsWith('.kt') &&
+               !previewFile.name.endsWith('.rs') && !previewFile.name.endsWith('.go') && !previewFile.name.endsWith('.rb') &&
+               !previewFile.name.endsWith('.pl') && !previewFile.name.endsWith('.r') && !previewFile.name.endsWith('.scala') &&
+               !previewFile.name.endsWith('.clj') && !previewFile.name.endsWith('.hs') && !previewFile.name.endsWith('.elm') &&
+               !previewFile.name.endsWith('.fs') && !previewFile.name.endsWith('.fsx') && (
+                <div className="text-center py-4 sm:py-8">
+                  <div className="w-20 h-20 sm:w-32 sm:h-32 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <File className="w-8 h-8 sm:w-16 sm:h-16 text-gray-300" />
                   </div>
-                  <h4 className="text-white font-medium mb-2">{previewFile.name}</h4>
-                  <p className="text-gray-400 mb-4">Preview not available for this file type</p>
+                  <h4 className="text-white font-medium mb-2 text-sm sm:text-base">{previewFile.name}</h4>
+                  <p className="text-gray-400 mb-4 text-xs sm:text-sm">Preview not available for this file type</p>
                   <button
                     onClick={() => handleDownload(previewFile)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg transition-colors text-xs sm:text-sm"
                   >
-                    <Download className="w-4 h-4 inline mr-2" />
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1 sm:mr-2" />
                     Download File
                   </button>
                 </div>

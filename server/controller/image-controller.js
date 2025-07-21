@@ -1,33 +1,35 @@
 import File from '../models/file.js';
+import { s3, uploadToR2 } from '../utils/upload.js';
+import { DeleteObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import dotenv from 'dotenv';
+dotenv.config();
+import stream from 'stream';
 
 const uploadFile = async(req,res)=>{
     try {
-        // Check if file exists in request
         if (!req.file) {
             return res.status(400).json({
                 success: false,
                 message: 'No file uploaded'
             });
         }
-
-        // Get user ID from the authenticated request
-        const userId = req.userId || 'default-user-id'; // Fallback for testing
-
+        const userId = req.userId || 'default-user-id';
+        // Upload to R2
+        const { key, url } = await uploadToR2(req.file.buffer, req.file.originalname, req.file.mimetype, userId);
         const fileobj = {
             userId: userId,
-            fileId: req.file.filename,
+            fileId: key,
             name: req.file.originalname,
-            fileLink: req.file.path,
+            fileLink: url,
             fileType: req.file.mimetype,
             fileSize: req.file.size,
             uploadDate: new Date(),
             previewLink: null
-        }
-        
+        };
         const file = await File.create(fileobj);
         res.status(200).json({
             _id: file._id,
-            path: `http://localhost:8000/files/${file._id}/download`,
+            path: url,
             name: file.name
         });
     } catch (error) {
@@ -37,21 +39,36 @@ const uploadFile = async(req,res)=>{
             message: error.message,
         });
     }
-}
+};
+
 const getImage = async(req,res)=>{
     try {
         const file = await File.findById(req.params.fileId);
         if (!file) {
             return res.status(404).json({ success: false, message: 'File not found' });
         }
-        
         // Increment download count if the field exists
         if (file.downloadCount !== undefined) {
             file.downloadCount++;
             await file.save();
         }
-        
-        res.download(file.fileLink, file.name);
+        // Fetch file from R2
+        const key = file.fileId;
+        const s3Response = await s3.send(new GetObjectCommand({
+            Bucket: process.env.R2_BUCKET,
+            Key: key,
+        }));
+        res.setHeader('Content-Disposition', `attachment; filename="${file.name}"`);
+        res.setHeader('Content-Type', file.fileType || 'application/octet-stream');
+        if (s3Response.Body instanceof stream.Readable) {
+            return s3Response.Body.pipe(res);
+        } else {
+            let data = Buffer.from([]);
+            for await (const chunk of s3Response.Body) {
+                data = Buffer.concat([data, chunk]);
+            }
+            return res.end(data);
+        }
     } catch (error) {
         console.error("Error in getImage function", error);
         res.status(500).json({
@@ -67,14 +84,15 @@ const previewFile = async (req, res) => {
         if (!file) {
             return res.status(404).json({ success: false, message: 'File not found' });
         }
-        
-        // Set appropriate headers for preview based on file type
+        // R2 key
+        const key = file.fileId;
+        // Get file from R2
+        const s3Response = await s3.send(new GetObjectCommand({
+            Bucket: process.env.R2_BUCKET,
+            Key: key,
+        }));
         res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
-        
-        // Set content type based on file extension for better preview
         const fileExtension = file.name.split('.').pop()?.toLowerCase();
-        
-        // Map file extensions to content types for better preview
         const contentTypeMap = {
             'py': 'text/plain',
             'js': 'text/javascript',
@@ -100,18 +118,28 @@ const previewFile = async (req, res) => {
             'go': 'text/plain',
             'rs': 'text/plain',
             'swift': 'text/plain',
-            'kt': 'text/plain'
+            'kt': 'text/plain',
+            'pdf': 'application/pdf',
         };
-        
-        // Set content type if we have a mapping for this extension
-        if (fileExtension && contentTypeMap[fileExtension]) {
-            res.setHeader('Content-Type', contentTypeMap[fileExtension]);
+        if ((file.fileType && file.fileType.startsWith('text/')) || contentTypeMap[fileExtension]) {
+            res.setHeader('Content-Type', contentTypeMap[fileExtension] || file.fileType || 'text/plain');
+            let data = '';
+            for await (const chunk of s3Response.Body) {
+                data += chunk.toString();
+            }
+            return res.send(data);
         } else {
-            // Use the original mimetype if no specific mapping
             res.setHeader('Content-Type', file.fileType || 'application/octet-stream');
+            if (s3Response.Body instanceof stream.Readable) {
+                return s3Response.Body.pipe(res);
+            } else {
+                let data = Buffer.from([]);
+                for await (const chunk of s3Response.Body) {
+                    data = Buffer.concat([data, chunk]);
+                }
+                return res.end(data);
+            }
         }
-        
-        res.sendFile(file.fileLink, { root: '.' });
     } catch (error) {
         console.error('Error in previewFile function', error);
         res.status(500).json({ success: false, message: error.message });
@@ -158,10 +186,12 @@ const deleteFile = async (req, res) => {
         if (!file) {
             return res.status(404).json({ success: false, message: 'File not found' });
         }
-        
-        // Delete the file from storage (you might want to add fs.unlink here)
+        // Delete from R2
+        await s3.send(new DeleteObjectCommand({
+            Bucket: process.env.R2_BUCKET,
+            Key: file.fileId,
+        }));
         await File.findByIdAndDelete(req.params.fileId);
-        
         res.status(200).json({ success: true, message: 'File deleted successfully' });
     } catch (error) {
         console.error('Error in deleteFile function', error);

@@ -1,10 +1,11 @@
 import express from 'express';
 import { uploadFile, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile } from '../controller/image-controller.js';
-import { upload } from '../utils/upload.js';
+import multer from 'multer';
 import protect from '../middleware/authMiddleware.js';
 
 const file = express.Router();
-file.post("/upload", protect, upload.single('file'), uploadFile);
+const memoryUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } });
+file.post("/upload", protect, memoryUpload.single('file'), uploadFile);
 file.get("/files", protect, listFiles);
 file.get("/files/:fileId/download", getImage);
 file.get("/files/:fileId/preview", previewFile);

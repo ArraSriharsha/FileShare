@@ -98,7 +98,7 @@ const FileUpload = ({ onFileUpload }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {/* Upload Area */}
       <form onSubmit={(e) => e.preventDefault()} style={{ display: 'contents' }}>
         <div
@@ -106,32 +106,32 @@ const FileUpload = ({ onFileUpload }) => {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-300 ${
+          className={`relative border-2 border-dashed rounded-xl p-4 sm:p-6 lg:p-8 text-center cursor-pointer transition-all duration-300 ${
             isDragging
               ? 'border-blue-500 bg-blue-500/10 scale-105'
               : 'border-gray-600 hover:border-blue-400 hover:bg-blue-500/5'
           }`}
         >
-          <div className="space-y-4">
-            <div className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center transition-colors ${
+          <div className="space-y-3 sm:space-y-4">
+            <div className={`mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center transition-colors ${
               isDragging ? 'bg-blue-500' : 'bg-gray-700'
             }`}>
-              <Upload className={`w-8 h-8 ${isDragging ? 'text-white' : 'text-blue-400'}`} />
+              <Upload className={`w-6 h-6 sm:w-8 sm:h-8 ${isDragging ? 'text-white' : 'text-blue-400'}`} />
             </div>
             
             <div>
-              <h3 className="text-xl font-medium text-white mb-2">
+              <h3 className="text-lg sm:text-xl font-medium text-white mb-2">
                 {isDragging ? 'Drop your files here' : 'Upload your files'}
               </h3>
-              <p className="text-gray-400 mb-4">
+              <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
                 Drag and drop files here, or click to select files
               </p>
-              <div className="flex flex-wrap justify-center gap-2 text-sm text-gray-500">
+              <div className="flex flex-wrap justify-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500">
                 <span>Supports:</span>
-                <span className="px-2 py-1 bg-gray-800 rounded">Images</span>
-                <span className="px-2 py-1 bg-gray-800 rounded">Videos</span>
-                <span className="px-2 py-1 bg-gray-800 rounded">Documents</span>
-                <span className="px-2 py-1 bg-gray-800 rounded">Audio</span>
+                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-800 rounded text-xs">Images</span>
+                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-800 rounded text-xs">Videos</span>
+                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-800 rounded text-xs">Documents</span>
+                <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-800 rounded text-xs">Audio</span>
               </div>
             </div>
           </div>
@@ -151,25 +151,25 @@ const FileUpload = ({ onFileUpload }) => {
       {/* Upload Progress */}
       {uploadingFiles.length > 0 && (
         <div className="space-y-2">
-          <h4 className="text-sm font-medium text-gray-400">Uploading files...</h4>
+          <h4 className="text-xs sm:text-sm font-medium text-gray-400">Uploading files...</h4>
           {uploadingFiles.map((file) => (
-            <div key={file.name} className="bg-gray-800/50 rounded-lg p-3">
+            <div key={file.name} className="bg-gray-800/50 rounded-lg p-2 sm:p-3">
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 min-w-0 flex-1">
                   {getFileIcon(file.type)}
-                  <span className="text-sm text-white truncate">{file.name}</span>
-                  <span className="text-xs text-gray-400">({formatFileSize(file.size)})</span>
+                  <span className="text-xs sm:text-sm text-white truncate">{file.name}</span>
+                  <span className="text-xs text-gray-400 flex-shrink-0">({formatFileSize(file.size)})</span>
                 </div>
                 <button
                   onClick={() => removeUploadingFile(file.name)}
-                  className="text-gray-400 hover:text-red-400 transition-colors"
+                  className="text-gray-400 hover:text-red-400 transition-colors flex-shrink-0 ml-2"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3 h-3 sm:w-4 sm:h-4" />
                 </button>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
+              <div className="w-full bg-gray-700 rounded-full h-1.5 sm:h-2">
                 <div 
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-blue-500 h-1.5 sm:h-2 rounded-full transition-all duration-300"
                   style={{ width: `${uploadProgress[file.name] || 0}%` }}
                 />
               </div>

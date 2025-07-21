@@ -78,10 +78,10 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-700">
-              <th className="text-left p-4 text-gray-300 font-medium">Name</th>
-              <th className="text-left p-4 text-gray-300 font-medium">Size</th>
-              <th className="text-left p-4 text-gray-300 font-medium">Modified</th>
-              <th className="text-left p-4 text-gray-300 font-medium">Actions</th>
+              <th className="text-left p-2 sm:p-4 text-gray-300 font-medium text-xs sm:text-sm">Name</th>
+              <th className="text-left p-2 sm:p-4 text-gray-300 font-medium text-xs sm:text-sm hidden sm:table-cell">Size</th>
+              <th className="text-left p-2 sm:p-4 text-gray-300 font-medium text-xs sm:text-sm hidden lg:table-cell">Modified</th>
+              <th className="text-left p-2 sm:p-4 text-gray-300 font-medium text-xs sm:text-sm">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -90,17 +90,17 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
                 key={file._id}
                 className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors"
               >
-                <td className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="text-blue-400">
+                <td className="p-2 sm:p-4">
+                  <div className="flex items-center space-x-2 sm:space-x-3">
+                    <div className="text-blue-400 flex-shrink-0">
                       {getFileIcon(file.type)}
                     </div>
                     {editingFile === file._id ? (
-                      <div className="flex space-x-2 flex-1">
+                      <div className="flex space-x-1 sm:space-x-2 flex-1 min-w-0">
                         <input
                           value={editName}
                           onChange={(e) => setEditName(e.target.value)}
-                          className="flex-1 bg-gray-700 text-white text-sm rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="flex-1 bg-gray-700 text-white text-xs sm:text-sm rounded px-1.5 sm:px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') handleSaveEdit();
                             if (e.key === 'Escape') handleCancelEdit();
@@ -109,62 +109,65 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
                         />
                         <button
                           onClick={handleSaveEdit}
-                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                          className="px-1.5 sm:px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 flex-shrink-0"
                         >
                           <Check className="w-3 h-3" />
                         </button>
                       </div>
                     ) : (
-                      <span className="text-white text-sm">{file.name}</span>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-white text-xs sm:text-sm truncate block">{file.name}</span>
+                        <span className="text-gray-400 text-xs sm:hidden">{formatFileSize(file.size)}</span>
+                      </div>
                     )}
                   </div>
                 </td>
-                <td className="p-4 text-gray-400 text-sm">
+                <td className="p-2 sm:p-4 text-gray-400 text-xs sm:text-sm hidden sm:table-cell">
                   {formatFileSize(file.size)}
                 </td>
-                <td className="p-4 text-gray-400 text-sm">
+                <td className="p-2 sm:p-4 text-gray-400 text-xs sm:text-sm hidden lg:table-cell">
                   {formatDate(file.uploadDate)}
                 </td>
-                <td className="p-4">
-                  <div className="flex space-x-2">
+                <td className="p-2 sm:p-4">
+                  <div className="flex space-x-1 sm:space-x-2">
                     <button
                       onClick={() => handlePreview(file)}
-                      className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                       title="Preview"
                     >
-                      <Eye className="w-4 h-4" />
+                      <Eye className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       onClick={() => handleDownload(file)}
-                      className="p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-400 hover:text-green-400 hover:bg-green-500/10 rounded-lg transition-colors"
                       title="Download"
                     >
-                      <Download className="w-4 h-4" />
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       onClick={() => handleShare(file)}
-                      className="p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-400 hover:text-blue-400 hover:bg-blue-500/10 rounded-lg transition-colors"
                       title="Share"
                     >
                       {copiedLink === file._id ? (
-                        <Check className="w-4 h-4 text-green-400" />
+                        <Check className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
                       ) : (
-                        <Share2 className="w-4 h-4" />
+                        <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
                       )}
                     </button>
                     <button
                       onClick={() => handleEdit(file)}
-                      className="p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 rounded-lg transition-colors"
                       title="Rename"
                     >
-                      <Edit2 className="w-4 h-4" />
+                      <Edit2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       onClick={() => onFileDelete(file._id)}
-                      className="p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                      className="p-1.5 sm:p-2 text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
                       title="Delete"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </td>

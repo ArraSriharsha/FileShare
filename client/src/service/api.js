@@ -98,3 +98,17 @@ export const checkAuth = async () => {
         throw error;
     }
 }
+
+export const googleAuth = async (token) => {
+    try {
+        const response = await api.post('/auth/google', { token }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response;
+    } catch (error) {
+        console.error('Error with Google auth', error);
+        throw error;
+    }
+}

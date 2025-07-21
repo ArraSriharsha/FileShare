@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://api.airfetch.online'
+const API_URL = 'https://fileshare-t5vw.onrender.com/'
 
 export const api = axios.create({
     baseURL: API_URL,

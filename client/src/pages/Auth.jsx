@@ -220,10 +220,10 @@ export default function Auth() {
     }
   };
   return (
-    <div className="flex h-screen w-screen bg-gradient-to-br from-gray-900 to-black items-center justify-center p-4">
-      <div className="relative w-full max-w-4xl h-[600px] rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
+    <div className="flex min-h-screen w-screen bg-gradient-to-br from-gray-900 to-black items-center justify-center p-2 sm:p-4">
+      <div className="relative w-full max-w-4xl min-h-[80vh] h-auto rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row bg-white/0">
         {/* Forms Side by Side */}
-        <div className="flex w-full h-full flex-col lg:flex-row">
+        <div className="flex w-full h-full flex-col lg:flex-row overflow-y-auto">
           {/* Sign In Form */}
           <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 z-10">
             <div className="w-full max-w-sm flex flex-col items-center">
@@ -362,8 +362,9 @@ export default function Auth() {
           </div>
         </div>
         {/* Overlay Panel - slides left/right above forms */}
-        <div className={`absolute top-0 left-0 w-full lg:w-1/2 h-full z-20 transition-transform duration-700 bg-blue-600 flex flex-col justify-center items-center
+        <div className={`absolute top-0 left-0 w-full lg:w-1/2 h-full z-20 transition-transform duration-700 bg-blue-600 flex-col justify-center items-center
           ${isLogin ? 'translate-x-full lg:translate-x-full' : 'translate-x-0 lg:translate-x-0'}
+          hidden lg:flex
         `}>
           <div className="flex flex-col justify-center items-center h-full p-4 sm:p-6 lg:p-10 text-white">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center">{isLogin ? 'Welcome Back!' : 'Hello, Friend!'}</h2>

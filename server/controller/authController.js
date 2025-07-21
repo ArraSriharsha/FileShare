@@ -35,6 +35,8 @@ export const register = async (req, res) => {
             httpOnly: true,
             secure: true, // Set to true in production with HTTPS
             sameSite: 'none',
+            domain: '.airfetch.online',
+            path: '/',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
         
@@ -92,6 +94,8 @@ export const login = async (req, res) => {
             httpOnly: true,
             secure: true, // Set to true in production with HTTPS
             sameSite: 'none',
+            domain: '.airfetch.online',
+            path: '/',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
         
@@ -244,6 +248,8 @@ export const googleAuth = async (req, res) => {
       httpOnly: true,
       secure: true, // Set to true in production with HTTPS
       sameSite: 'none',
+      domain: '.airfetch.online',
+      path: '/',
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     });
 

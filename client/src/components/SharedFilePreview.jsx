@@ -28,10 +28,13 @@ const SharedFilePreview = () => {
   if (error) return <div className="text-center text-red-400 p-8">{error}</div>;
   if (!file) return null;
 
-  const isImage = file.type && file.type.startsWith('image/');
-  const isVideo = file.type && file.type.startsWith('video/');
-  const isAudio = file.type && file.type.startsWith('audio/');
-  const isPDF = file.type === 'application/pdf';
+  const fileType = file.type || file.fileType || '';
+  const isImage = fileType.startsWith('image/');
+  const isVideo = fileType.startsWith('video/');
+  const isAudio = fileType.startsWith('audio/');
+  const isPDF = fileType === 'application/pdf';
+  const isText = fileType.startsWith('text/');
+  const isCode = fileType.startsWith('text/') && fileType.endsWith('+xml') || fileType.endsWith('+json') || fileType.endsWith('+javascript') || fileType.endsWith('+typescript') || fileType.endsWith('+python') || fileType.endsWith('+java') || fileType.endsWith('+c') || fileType.endsWith('+cpp') || fileType.endsWith('+cs') || fileType.endsWith('+php') || fileType.endsWith('+rb') || fileType.endsWith('+go') || fileType.endsWith('+rs') || fileType.endsWith('+swift') || fileType.endsWith('+kt') || fileType.endsWith('+sql') || fileType.endsWith('+sh') || fileType.endsWith('+bash') || fileType.endsWith('+md') || fileType.endsWith('+txt') || fileType.endsWith('+pdf');
 
   return (
     <div className="max-w-xl mx-auto bg-gray-800 rounded-xl p-6 mt-10 text-center">
@@ -48,7 +51,15 @@ const SharedFilePreview = () => {
       {isPDF && (
         <iframe src={`${API_BASE_URL}/files/${file._id}/preview`} className="w-full h-96 bg-white rounded" title="PDF preview" />
       )}
-      {!isImage && !isVideo && !isAudio && !isPDF && (
+      {isCode && (
+        <iframe src={`${API_BASE_URL}/files/${file._id}/preview`} className="w-full h-96 bg-white rounded" title="Code preview" />
+      )}
+      {isText && (
+        <div className="text-gray-300 mb-4">
+          <pre className="whitespace-pre-wrap break-words">{file.content}</pre>
+        </div>
+      )}
+      {!isImage && !isVideo && !isAudio && !isPDF && !isCode && !isText && (
         <div className="text-gray-300 mb-4">Preview not available for this file type.</div>
       )}
       <a

@@ -1,7 +1,12 @@
 import mongoose from 'mongoose';
 
-const FileSchema = new mongoose.Schema({
-    path:{
+const fileSchema = new mongoose.Schema({
+    userId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'user',
+        required:true
+    },
+    fileId:{
         type:String,
         required:true
     },
@@ -9,13 +14,28 @@ const FileSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    downloadCount:{
+    fileLink:{
+        type:String,
+        required:true
+    },
+    fileType:{
+        type:String,
+        required:true
+    },
+    fileSize:{
         type:Number,
-        required:true,
-        default:0
+        required:true
+    },
+    uploadDate:{
+        type:Date,
+        default:Date.now
+    },
+    previewLink:{
+        type:String,
+        default:null
     }
 })
 
-const File = mongoose.model('file',FileSchema); // 'file' is the name of collection in MongoDB also it is made plural in the database
+const File = mongoose.model('file',fileSchema); // 'file' is the name of collection in MongoDB also it is made plural in the database
 
 export default File;

@@ -1,38 +1,62 @@
 import File from '../models/file.js';
 
-const uploadImage = async(req,res)=>{
-    //console.log(req); // logs the requested file data filename,path etc
-    const fileobj = {
-        path:req.file.path,
-        name:req.file.originalname
-    }
+const uploadFile = async(req,res)=>{
     try {
-        const file = await File.create(fileobj)
+        // Check if file exists in request
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded'
+            });
+        }
+
+        // Get user ID from the authenticated request
+        const userId = req.userId || 'default-user-id'; // Fallback for testing
+
+        const fileobj = {
+            userId: userId,
+            fileId: req.file.filename,
+            name: req.file.originalname,
+            fileLink: req.file.path,
+            fileType: req.file.mimetype,
+            fileSize: req.file.size,
+            uploadDate: new Date(),
+            previewLink: null
+        }
+        
+        const file = await File.create(fileobj);
         res.status(200).json({
             _id: file._id,
-            path: `http://localhost:8000/files/${file._id}/download`, // Updated path to match new route
+            path: `http://localhost:8000/files/${file._id}/download`,
             name: file.name
         });
     } catch (error) {
-        console.error("Error in uploadImage function",error);
+        console.error("Error in uploadFile function", error);
         res.status(500).json({
-            success:false,
-            message:error.message,
+            success: false,
+            message: error.message,
         });
     }
 }
 const getImage = async(req,res)=>{
-    try {                            //fileId becuase in the routes file we have used fileId as a parameter
-        //const {fileId} = req.params; // destructuring equivalent to req.params.fileId
-        const file = await File.findById(req.params.fileId); //can also be written as File.findOne({req.params.fileId})
-        file.downloadCount++;
-        await file.save();
-        res.download(file.path,file.name);// express function to download the file in response
+    try {
+        const file = await File.findById(req.params.fileId);
+        if (!file) {
+            return res.status(404).json({ success: false, message: 'File not found' });
+        }
+        
+        // Increment download count if the field exists
+        if (file.downloadCount !== undefined) {
+            file.downloadCount++;
+            await file.save();
+        }
+        
+        res.download(file.fileLink, file.name);
     } catch (error) {
-        console.error("Error in getImage function",error); //basically handles the download error
+        console.error("Error in getImage function", error);
         res.status(500).json({
-            success:false,
-            message:error.message,
+            success: false,
+            message: error.message,
         })
     }
 }
@@ -43,9 +67,51 @@ const previewFile = async (req, res) => {
         if (!file) {
             return res.status(404).json({ success: false, message: 'File not found' });
         }
-        // Set appropriate headers for preview
+        
+        // Set appropriate headers for preview based on file type
         res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
-        res.sendFile(file.path, { root: '.' });
+        
+        // Set content type based on file extension for better preview
+        const fileExtension = file.name.split('.').pop()?.toLowerCase();
+        
+        // Map file extensions to content types for better preview
+        const contentTypeMap = {
+            'py': 'text/plain',
+            'js': 'text/javascript',
+            'ts': 'text/typescript',
+            'jsx': 'text/javascript',
+            'tsx': 'text/typescript',
+            'html': 'text/html',
+            'css': 'text/css',
+            'scss': 'text/css',
+            'json': 'application/json',
+            'xml': 'text/xml',
+            'sql': 'text/plain',
+            'sh': 'text/plain',
+            'bash': 'text/plain',
+            'md': 'text/markdown',
+            'txt': 'text/plain',
+            'java': 'text/plain',
+            'cpp': 'text/plain',
+            'c': 'text/plain',
+            'cs': 'text/plain',
+            'php': 'text/plain',
+            'rb': 'text/plain',
+            'go': 'text/plain',
+            'rs': 'text/plain',
+            'swift': 'text/plain',
+            'kt': 'text/plain'
+        };
+        
+        // Set content type if we have a mapping for this extension
+        if (fileExtension && contentTypeMap[fileExtension]) {
+            res.setHeader('Content-Type', contentTypeMap[fileExtension]);
+        } else {
+            // Use the original mimetype if no specific mapping
+            res.setHeader('Content-Type', file.fileType || 'application/octet-stream');
+        }
+        
+        res.sendFile(file.fileLink, { root: '.' });
     } catch (error) {
         console.error('Error in previewFile function', error);
         res.status(500).json({ success: false, message: error.message });
@@ -68,17 +134,20 @@ const getShareLink = async (req, res) => {
 
 const listFiles = async (req, res) => {
     try {
-        const files = await File.find({}, '_id name path createdAt');
+        const userId = req.userId;
+        const files = await File.find({ userId: userId });
         const filesWithDetails = files.map(file => ({
             _id: file._id,
             name: file.name,
-            size: 0, // You might want to get actual file size from fs.stat
-            type: 'application/octet-stream', // You might want to determine this from file extension
-            uploadDate: file.createdAt,
-            shareLink: `http://localhost:8000/files/${file._id}/download`
+            size: file.fileSize || 0,
+            type: file.fileType || 'application/octet-stream',
+            uploadDate: file.uploadDate,
+            fileLink: file.fileLink,
+            previewLink: file.previewLink
         }));
         res.status(200).json(filesWithDetails);
     } catch (error) {
+        console.error('Error in listFiles function', error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -122,4 +191,4 @@ const renameFile = async (req, res) => {
     }
 };
 
-export { uploadImage, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile };
+export { uploadFile, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile };

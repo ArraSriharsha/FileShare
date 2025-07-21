@@ -1,5 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Download, Share2, Trash2, Edit2, Eye, File, Image, Video, Music, FileText, Copy, Check, X } from 'lucide-react';
+
+// CodePreview component for better code file handling
+const CodePreview = ({ file }) => {
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:8000/files/${file._id}/preview`, {
+          credentials: 'include'
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch file content');
+        }
+        
+        const text = await response.text();
+        setContent(text);
+      } catch (err) {
+        console.error('Error fetching file content:', err);
+        setError('Failed to load file content');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContent();
+  }, [file._id]);
+
+  if (loading) {
+    return (
+      <div className="bg-gray-900 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-white font-medium">{file.name}</h4>
+          <span className="text-gray-400 text-sm">{file.type}</span>
+        </div>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-gray-400">Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 rounded-lg p-4">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="text-white font-medium">{file.name}</h4>
+          <span className="text-gray-400 text-sm">{file.type}</span>
+        </div>
+        <div className="flex items-center justify-center h-96">
+          <div className="text-red-400">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-900 rounded-lg p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-white font-medium">{file.name}</h4>
+        <span className="text-gray-400 text-sm">{file.type}</span>
+      </div>
+      <div className="bg-gray-800 rounded-lg p-4 h-[70vh] overflow-auto">
+        <pre className="text-white font-mono text-sm whitespace-pre-wrap">
+          {content}
+        </pre>
+      </div>
+    </div>
+  );
+};
 
 const FileGrid = ({ files, onFileDelete, onFileRename }) => {
   console.log('FileGrid files:', files);
@@ -72,29 +146,156 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
   };
 
   const renderPreview = (file) => {
+    // Image files - show actual thumbnail
     if (file.type.startsWith('image/')) {
       return (
-        <img
-          src={`http://localhost:8000/files/${file._id}/preview`}
-          alt={file.name}
-          className="w-full h-32 object-cover rounded-lg"
-        />
+        <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden">
+          <img
+            src={`http://localhost:8000/files/${file._id}/preview`}
+            alt={file.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+          <div className="absolute inset-0 bg-gray-800 flex items-center justify-center" style={{ display: 'none' }}>
+            <Image className="w-8 h-8 text-gray-400" />
+          </div>
+        </div>
       );
     }
     
+    // Video files - show video thumbnail with play button
     if (file.type.startsWith('video/')) {
       return (
-        <video
-          src={`http://localhost:8000/files/${file._id}/preview`}
-          className="w-full h-32 object-cover rounded-lg"
-          controls={false}
-        />
+        <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden group">
+          <video
+            src={`http://localhost:8000/files/${file._id}/preview`}
+            className="w-full h-full object-cover"
+            muted
+            onError={(e) => {
+              e.target.style.display = 'none';
+              e.target.nextSibling.style.display = 'flex';
+            }}
+          />
+          <div className="absolute inset-0 bg-gray-800 flex items-center justify-center" style={{ display: 'none' }}>
+            <Video className="w-8 h-8 text-gray-400" />
+          </div>
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
       );
     }
     
+    // Audio files - show waveform or audio icon
+    if (file.type.startsWith('audio/')) {
+      return (
+        <div className="w-full h-32 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <Music className="w-8 h-8 text-white mb-2" />
+            <div className="flex space-x-1">
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className="w-1 bg-white/60 rounded-full animate-pulse"
+                  style={{ height: `${Math.random() * 20 + 10}px` }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+    // PDF files - show PDF icon with document preview
+    if (file.type === 'application/pdf') {
+      return (
+        <div className="w-full h-32 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <FileText className="w-8 h-8 text-white mb-2" />
+            <div className="text-white text-xs font-medium">PDF</div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Document files (Word, Excel, PowerPoint)
+    if (file.type.includes('document') || file.type.includes('spreadsheet') || file.type.includes('presentation')) {
+      const getDocIcon = () => {
+        if (file.type.includes('word')) return 'DOC';
+        if (file.type.includes('excel') || file.type.includes('spreadsheet')) return 'XLS';
+        if (file.type.includes('powerpoint') || file.type.includes('presentation')) return 'PPT';
+        return 'DOC';
+      };
+      
+      return (
+        <div className="w-full h-32 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <FileText className="w-8 h-8 text-white mb-2" />
+            <div className="text-white text-xs font-medium">{getDocIcon()}</div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Archive files (ZIP, RAR, etc.)
+    if (file.type.includes('zip') || file.type.includes('rar') || file.type.includes('tar') || file.type.includes('7z')) {
+      return (
+        <div className="w-full h-32 bg-gradient-to-br from-yellow-600 to-orange-600 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <File className="w-8 h-8 text-white mb-2" />
+            <div className="text-white text-xs font-medium">ZIP</div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Code files - check this BEFORE text files
+    if (file.type.includes('javascript') || file.type.includes('python') || file.type.includes('java') || 
+        file.type.includes('cpp') || file.type.includes('csharp') || file.type.includes('php') ||
+        file.name.endsWith('.js') || file.name.endsWith('.py') || file.name.endsWith('.java') ||
+        file.name.endsWith('.cpp') || file.name.endsWith('.cs') || file.name.endsWith('.php') ||
+        file.name.endsWith('.ts') || file.name.endsWith('.jsx') || file.name.endsWith('.tsx') ||
+        file.name.endsWith('.html') || file.name.endsWith('.css') || file.name.endsWith('.scss') ||
+        file.name.endsWith('.json') || file.name.endsWith('.xml') || file.name.endsWith('.sql') ||
+        file.name.endsWith('.sh') || file.name.endsWith('.bash') || file.name.endsWith('.md')) {
+      return (
+        <div className="w-full h-32 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <File className="w-8 h-8 text-white mb-2" />
+            <div className="text-white text-xs font-medium">CODE</div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Text files - show text preview (but NOT code files)
+    if (file.type.startsWith('text/')) {
+      return (
+        <div className="w-full h-32 bg-gradient-to-br from-green-600 to-teal-600 rounded-lg flex items-center justify-center">
+          <div className="text-center">
+            <FileText className="w-8 h-8 text-white mb-2" />
+            <div className="text-white text-xs font-medium">TEXT</div>
+          </div>
+        </div>
+      );
+    }
+    
+    // Default file icon
     return (
-      <div className="w-full h-32 bg-gray-800 rounded-lg flex items-center justify-center">
-        {getFileIcon(file.type)}
+      <div className="w-full h-32 bg-gradient-to-br from-gray-600 to-gray-700 rounded-lg flex items-center justify-center">
+        <div className="text-center">
+          <File className="w-8 h-8 text-gray-300 mb-2" />
+          <div className="text-gray-300 text-xs font-medium">
+            {file.name.split('.').pop()?.toUpperCase() || 'FILE'}
+          </div>
+        </div>
       </div>
     );
   };
@@ -198,18 +399,19 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
       {/* Preview Modal */}
       {previewFile && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800 rounded-xl max-w-4xl max-h-[90vh] w-full overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <h3 className="text-white font-medium">{previewFile.name}</h3>
+          <div className="bg-gray-800 rounded-xl max-w-6xl max-h-[95vh] w-full overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-700">
+              <h3 className="text-white font-medium text-lg">{previewFile.name}</h3>
               <button
                 onClick={() => setPreviewFile(null)}
                 className="text-gray-400 hover:text-white"
               >
-                <X className="w-6 h-6" />
+                <X className="w-8 h-8" />
               </button>
             </div>
             
-            <div className="p-4 max-h-[calc(90vh-120px)] overflow-auto">
+            <div className="p-6 max-h-[calc(95vh-140px)] overflow-auto">
+              {/* Image Preview */}
               {previewFile.type.startsWith('image/') && (
                 <img
                   src={`http://localhost:8000/files/${previewFile._id}/preview`}
@@ -218,17 +420,23 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                 />
               )}
               
+              {/* Video Preview */}
               {previewFile.type.startsWith('video/') && (
                 <video
                   src={`http://localhost:8000/files/${previewFile._id}/preview`}
                   controls
                   className="max-w-full max-h-full mx-auto"
+                  autoPlay={false}
                 />
               )}
               
+              {/* Audio Preview */}
               {previewFile.type.startsWith('audio/') && (
                 <div className="text-center py-8">
-                  <Music className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <div className="w-32 h-32 bg-gradient-to-br from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Music className="w-16 h-16 text-white" />
+                  </div>
+                  <h4 className="text-white font-medium mb-4">{previewFile.name}</h4>
                   <audio
                     src={`http://localhost:8000/files/${previewFile._id}/preview`}
                     controls
@@ -237,13 +445,98 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                 </div>
               )}
               
-              {previewFile.type.startsWith('text/') && (
-                <div className="bg-gray-900 rounded-lg p-4 text-white font-mono text-sm">
+              {/* PDF Preview */}
+              {previewFile.type === 'application/pdf' && (
+                <div className="w-full h-[70vh]">
                   <iframe
                     src={`http://localhost:8000/files/${previewFile._id}/preview`}
-                    className="w-full h-96 bg-white rounded"
-                    title="Text preview"
+                    className="w-full h-full bg-white rounded"
+                    title="PDF preview"
                   />
+                </div>
+              )}
+              
+              {/* Document Preview (Word, Excel, PowerPoint) */}
+              {(previewFile.type.includes('document') || previewFile.type.includes('spreadsheet') || previewFile.type.includes('presentation')) && (
+                <div className="text-center py-8">
+                  <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <FileText className="w-16 h-16 text-white" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">{previewFile.name}</h4>
+                  <p className="text-gray-400 mb-4">Document preview not available</p>
+                  <button
+                    onClick={() => handleDownload(previewFile)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Download className="w-4 h-4 inline mr-2" />
+                    Download to View
+                  </button>
+                </div>
+              )}
+              
+              {/* Archive Preview */}
+              {(previewFile.type.includes('zip') || previewFile.type.includes('rar') || previewFile.type.includes('tar') || previewFile.type.includes('7z')) && (
+                <div className="text-center py-8">
+                  <div className="w-32 h-32 bg-gradient-to-br from-yellow-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <File className="w-16 h-16 text-white" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">{previewFile.name}</h4>
+                  <p className="text-gray-400 mb-4">Archive preview not available</p>
+                  <button
+                    onClick={() => handleDownload(previewFile)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Download className="w-4 h-4 inline mr-2" />
+                    Download to Extract
+                  </button>
+                </div>
+              )}
+              
+              {/* Code Preview - check this BEFORE text preview */}
+              {(previewFile.type.includes('javascript') || previewFile.type.includes('python') || previewFile.type.includes('java') || 
+                previewFile.type.includes('cpp') || previewFile.type.includes('csharp') || previewFile.type.includes('php') ||
+                previewFile.name.endsWith('.js') || previewFile.name.endsWith('.py') || previewFile.name.endsWith('.java') ||
+                previewFile.name.endsWith('.cpp') || previewFile.name.endsWith('.cs') || previewFile.name.endsWith('.php') ||
+                previewFile.name.endsWith('.ts') || previewFile.name.endsWith('.jsx') || previewFile.name.endsWith('.tsx') ||
+                previewFile.name.endsWith('.html') || previewFile.name.endsWith('.css') || previewFile.name.endsWith('.scss') ||
+                previewFile.name.endsWith('.json') || previewFile.name.endsWith('.xml') || previewFile.name.endsWith('.sql') ||
+                previewFile.name.endsWith('.sh') || previewFile.name.endsWith('.bash') || previewFile.name.endsWith('.md')) && (
+                <CodePreview file={previewFile} />
+              )}
+              
+              {/* Text Preview - but NOT code files */}
+              {previewFile.type.startsWith('text/') && 
+               !previewFile.name.endsWith('.js') && !previewFile.name.endsWith('.py') && !previewFile.name.endsWith('.java') &&
+               !previewFile.name.endsWith('.cpp') && !previewFile.name.endsWith('.cs') && !previewFile.name.endsWith('.php') &&
+               !previewFile.name.endsWith('.ts') && !previewFile.name.endsWith('.jsx') && !previewFile.name.endsWith('.tsx') &&
+               !previewFile.name.endsWith('.html') && !previewFile.name.endsWith('.css') && !previewFile.name.endsWith('.scss') &&
+               !previewFile.name.endsWith('.json') && !previewFile.name.endsWith('.xml') && !previewFile.name.endsWith('.sql') &&
+               !previewFile.name.endsWith('.sh') && !previewFile.name.endsWith('.bash') && !previewFile.name.endsWith('.md') && (
+                <CodePreview file={previewFile} />
+              )}
+              
+              {/* Default Preview */}
+              {!previewFile.type.startsWith('image/') && !previewFile.type.startsWith('video/') && !previewFile.type.startsWith('audio/') && 
+               previewFile.type !== 'application/pdf' && !previewFile.type.startsWith('text/') && 
+               !previewFile.type.includes('document') && !previewFile.type.includes('spreadsheet') && !previewFile.type.includes('presentation') &&
+               !previewFile.type.includes('zip') && !previewFile.type.includes('rar') && !previewFile.type.includes('tar') && !previewFile.type.includes('7z') &&
+               !previewFile.type.includes('javascript') && !previewFile.type.includes('python') && !previewFile.type.includes('java') && 
+               !previewFile.type.includes('cpp') && !previewFile.type.includes('csharp') && !previewFile.type.includes('php') &&
+               !previewFile.name.endsWith('.js') && !previewFile.name.endsWith('.py') && !previewFile.name.endsWith('.java') &&
+               !previewFile.name.endsWith('.cpp') && !previewFile.name.endsWith('.cs') && !previewFile.name.endsWith('.php') && (
+                <div className="text-center py-8">
+                  <div className="w-32 h-32 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <File className="w-16 h-16 text-gray-300" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">{previewFile.name}</h4>
+                  <p className="text-gray-400 mb-4">Preview not available for this file type</p>
+                  <button
+                    onClick={() => handleDownload(previewFile)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Download className="w-4 h-4 inline mr-2" />
+                    Download File
+                  </button>
                 </div>
               )}
             </div>

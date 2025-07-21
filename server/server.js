@@ -11,8 +11,14 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://www.airfetch.online',
+  'https://airfetch.online'
+];
+
 app.use(cors({
-    origin: 'http://localhost:5173'||'https://www.airfetch.online', // Your frontend URL
+    origin: allowedOrigins,
     credentials: true
 }));
 app.use(cookieParser());

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Download, Share2, Trash2, Edit2, Eye, File, Image, Video, Music, FileText, Check } from 'lucide-react';
+import { API_BASE_URL } from '../service/config';
 
 const FileList = ({ files, onFileDelete, onFileRename }) => {
   console.log('FileList files:', files);
@@ -35,7 +36,7 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
 
   const handleDownload = (file) => {
     const link = document.createElement('a');
-    link.href = `http://localhost:8000/files/${file._id}/download`;
+    link.href = `${API_BASE_URL}/files/${file._id}/download`;
     link.download = file.name;
     link.click();
   };
@@ -51,7 +52,7 @@ const FileList = ({ files, onFileDelete, onFileRename }) => {
   };
 
   const handlePreview = (file) => {
-    window.open(`http://localhost:8000/files/${file._id}/preview`, '_blank');
+    window.open(`${API_BASE_URL}/files/${file._id}/preview`, '_blank');
   };
 
   const handleEdit = (file) => {

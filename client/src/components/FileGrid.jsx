@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Share2, Trash2, Edit2, Eye, File, Image, Video, Music, FileText, Copy, Check, X } from 'lucide-react';
+import { API_BASE_URL } from '../service/config';
 
 // CodePreview component for better code file handling
 const CodePreview = ({ file }) => {
@@ -11,7 +12,7 @@ const CodePreview = ({ file }) => {
     const fetchContent = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost:8000/files/${file._id}/preview`, {
+        const response = await fetch(`${API_BASE_URL}/files/${file._id}/preview`, {
           credentials: 'include'
         });
         
@@ -108,7 +109,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
 
   const handleDownload = (file) => {
     const link = document.createElement('a');
-    link.href = `http://localhost:8000/files/${file._id}/download`;
+    link.href = `${API_BASE_URL}/files/${file._id}/download`;
     link.download = file.name;
     link.click();
   };
@@ -151,7 +152,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
       return (
         <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden">
           <img
-            src={`http://localhost:8000/files/${file._id}/preview`}
+            src={`${API_BASE_URL}/files/${file._id}/preview`}
             alt={file.name}
             className="w-full h-full object-cover"
             onError={(e) => {
@@ -171,7 +172,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
       return (
         <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden group">
           <video
-            src={`http://localhost:8000/files/${file._id}/preview`}
+            src={`${API_BASE_URL}/files/${file._id}/preview`}
             className="w-full h-full object-cover"
             muted
             onError={(e) => {
@@ -421,7 +422,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               {/* Image Preview */}
               {previewFile.type.startsWith('image/') && (
                 <img
-                  src={`http://localhost:8000/files/${previewFile._id}/preview`}
+                  src={`${API_BASE_URL}/files/${previewFile._id}/preview`}
                   alt={previewFile.name}
                   className="max-w-full max-h-full object-contain mx-auto"
                 />
@@ -430,7 +431,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               {/* Video Preview */}
               {previewFile.type.startsWith('video/') && (
                 <video
-                  src={`http://localhost:8000/files/${previewFile._id}/preview`}
+                  src={`${API_BASE_URL}/files/${previewFile._id}/preview`}
                   controls
                   className="max-w-full max-h-full mx-auto"
                   autoPlay={false}
@@ -445,7 +446,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
                   </div>
                   <h4 className="text-white font-medium mb-2 sm:mb-4 text-sm sm:text-base">{previewFile.name}</h4>
                   <audio
-                    src={`http://localhost:8000/files/${previewFile._id}/preview`}
+                    src={`${API_BASE_URL}/files/${previewFile._id}/preview`}
                     controls
                     className="mx-auto"
                   />
@@ -456,7 +457,7 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
               {previewFile.type === 'application/pdf' && (
                 <div className="w-full h-[60vh] sm:h-[70vh]">
                   <iframe
-                    src={`http://localhost:8000/files/${previewFile._id}/preview`}
+                    src={`${API_BASE_URL}/files/${previewFile._id}/preview`}
                     className="w-full h-full bg-white rounded"
                     title="PDF preview"
                   />

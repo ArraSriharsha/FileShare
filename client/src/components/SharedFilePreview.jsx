@@ -30,7 +30,7 @@ const SharedFilePreview = () => {
   const isVideo = fileType.startsWith('video/');
   const isAudio = fileType.startsWith('audio/');
   const isPDF = fileType === 'application/pdf';
-  const isText = fileType.startsWith('text/');
+  const isText = fileType.startsWith('text/') || fileType === 'application/octet-stream';
   const isCode = isText && (
     fileType.endsWith('+xml') || fileType.endsWith('+json') || fileType.endsWith('+javascript') ||
     fileType.endsWith('+typescript') || fileType.endsWith('+python') || fileType.endsWith('+java') ||
@@ -73,7 +73,9 @@ const SharedFilePreview = () => {
       )}
       {isText && !isCode && (
         <div className="text-gray-300 mb-4">
-          <pre className="whitespace-pre-wrap break-words">{fileContent}</pre>
+          <pre className="whitespace-pre overflow-x-auto break-words p-4 bg-gray-900 rounded border border-gray-700 text-left text-sm max-h-96">
+            {fileContent}
+          </pre>
         </div>
       )}
       {!isImage && !isVideo && !isAudio && !isPDF && !isCode && !isText && (

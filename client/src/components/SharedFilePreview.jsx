@@ -7,6 +7,7 @@ const SharedFilePreview = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [fileContent, setFileContent] = useState('');
 
   useEffect(() => {
     const fetchFile = async () => {
@@ -24,17 +25,33 @@ const SharedFilePreview = () => {
     fetchFile();
   }, [fileId]);
 
-  if (loading) return <div className="text-center text-gray-400 p-8">Loading...</div>;
-  if (error) return <div className="text-center text-red-400 p-8">{error}</div>;
-  if (!file) return null;
-
-  const fileType = file.type || file.fileType || '';
+  const fileType = file?.type || file?.fileType || '';
   const isImage = fileType.startsWith('image/');
   const isVideo = fileType.startsWith('video/');
   const isAudio = fileType.startsWith('audio/');
   const isPDF = fileType === 'application/pdf';
   const isText = fileType.startsWith('text/');
-  const isCode = fileType.startsWith('text/') && fileType.endsWith('+xml') || fileType.endsWith('+json') || fileType.endsWith('+javascript') || fileType.endsWith('+typescript') || fileType.endsWith('+python') || fileType.endsWith('+java') || fileType.endsWith('+c') || fileType.endsWith('+cpp') || fileType.endsWith('+cs') || fileType.endsWith('+php') || fileType.endsWith('+rb') || fileType.endsWith('+go') || fileType.endsWith('+rs') || fileType.endsWith('+swift') || fileType.endsWith('+kt') || fileType.endsWith('+sql') || fileType.endsWith('+sh') || fileType.endsWith('+bash') || fileType.endsWith('+md') || fileType.endsWith('+txt') || fileType.endsWith('+pdf');
+  const isCode = isText && (
+    fileType.endsWith('+xml') || fileType.endsWith('+json') || fileType.endsWith('+javascript') ||
+    fileType.endsWith('+typescript') || fileType.endsWith('+python') || fileType.endsWith('+java') ||
+    fileType.endsWith('+c') || fileType.endsWith('+cpp') || fileType.endsWith('+cs') || fileType.endsWith('+php') ||
+    fileType.endsWith('+rb') || fileType.endsWith('+go') || fileType.endsWith('+rs') || fileType.endsWith('+swift') ||
+    fileType.endsWith('+kt') || fileType.endsWith('+sql') || fileType.endsWith('+sh') || fileType.endsWith('+bash') ||
+    fileType.endsWith('+md') || fileType.endsWith('+txt') || fileType.endsWith('+pdf')
+  );
+
+  useEffect(() => {
+    if (file && (isText || isCode)) {
+      fetch(`${API_BASE_URL}/files/${file._id}/preview`)
+        .then(res => res.text())
+        .then(setFileContent)
+        .catch(() => setFileContent('Failed to load content'));
+    }
+  }, [file, isText, isCode]);
+
+  if (loading) return <div className="text-center text-gray-400 p-8">Loading...</div>;
+  if (error) return <div className="text-center text-red-400 p-8">{error}</div>;
+  if (!file) return null;
 
   return (
     <div className="max-w-xl mx-auto bg-gray-800 rounded-xl p-6 mt-10 text-center">
@@ -54,9 +71,9 @@ const SharedFilePreview = () => {
       {isCode && (
         <iframe src={`${API_BASE_URL}/files/${file._id}/preview`} className="w-full h-96 bg-white rounded" title="Code preview" />
       )}
-      {isText && (
+      {isText && !isCode && (
         <div className="text-gray-300 mb-4">
-          <pre className="whitespace-pre-wrap break-words">{file.content}</pre>
+          <pre className="whitespace-pre-wrap break-words">{fileContent}</pre>
         </div>
       )}
       {!isImage && !isVideo && !isAudio && !isPDF && !isCode && !isText && (

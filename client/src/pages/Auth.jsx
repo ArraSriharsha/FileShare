@@ -220,18 +220,18 @@ export default function Auth() {
     }
   };
   return (
-    <div className="flex h-screen w-screen bg-gradient-to-br from-gray-900 to-black items-center justify-center p-4">
-      <div className="relative w-full max-w-4xl h-[600px] rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row">
+    <div className="flex min-h-screen w-screen bg-gradient-to-br from-gray-900 to-black items-center justify-center p-2 sm:p-4">
+      <div className="relative w-full max-w-4xl min-h-[80vh] h-auto rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row bg-white/0">
         {/* Forms Side by Side */}
-        <div className="flex w-full h-full flex-col lg:flex-row">
+        <div className="flex w-full h-full flex-col lg:flex-row overflow-y-auto">
           {/* Sign In Form */}
-          <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 z-10">
+          <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 z-10 min-h-[80vh] py-8">
             <div className="w-full max-w-sm flex flex-col items-center">
-              <div className="flex items-center justify-center gap-2 mb-4">
+              <div className="flex items-center justify-center gap-2 mb-4 sm:mb-6">
                 <img src="/iconblack.svg" alt="icon" className="w-7 h-7 sm:w-9 sm:h-9" />
                 <span className="font-bold text-black text-2xl sm:text-3xl">Air Fetch</span>
               </div>
-              <p className="mb-6 sm:mb-8 text-center text-gray-800 text-sm sm:text-base">Sign in to access your files and manage your cloud storage.</p>
+              <p className="mb-6 sm:mb-8 text-center text-gray-800 text-sm sm:text-base px-4">Sign in to access your files and manage your cloud storage.</p>
               <form className="w-full flex flex-col gap-3 sm:gap-4 animate-fade-in" onSubmit={handleSignIn}>
                 <input type="email" placeholder="Email" className="px-3 sm:px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base" 
                 value={loginData.login} 
@@ -280,15 +280,15 @@ export default function Auth() {
                   <div className="h-px flex-1 bg-gray-400" />
                 </div>
               </div>
-              <div className="mt-3 sm:mt-4 w-full flex justify-center">
+                            <div className="mt-3 sm:mt-4 w-full flex justify-center">
                 <div id="google-signin-button"></div>
-                {isGoogleLoading && (
-                  <div className="mt-2 text-center">
-                    <Spinner />
-                    <span className="ml-2 text-xs sm:text-sm text-gray-600">Signing in with Google...</span>
-                  </div>
-                )}
               </div>
+              {isGoogleLoading && (
+                <div className="mt-2 text-center">
+                  <Spinner />
+                  <span className="ml-2 text-xs sm:text-sm text-gray-600">Signing in with Google...</span>
+                </div>
+              )}
               <div className="mt-6 sm:mt-8 text-center">
                 <span className="text-opacity-80 text-sm sm:text-base">Don't have an account?</span>
                 <button
@@ -311,10 +311,10 @@ export default function Auth() {
             </div>
           </div>
           {/* Sign Up Form */}
-          <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 z-10">
+          <div className="w-full lg:w-1/2 bg-white flex flex-col justify-center items-center p-4 sm:p-6 lg:p-10 z-10 min-h-[80vh] py-8">
             <div className="w-full max-w-sm flex flex-col items-center">
-              <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-800">Create Account</h1>
-              <p className="mb-6 sm:mb-8 text-center text-gray-800 text-sm sm:text-base">Sign up to start storing and sharing your files securely.</p>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800">Create Account</h1>
+              <p className="mb-6 sm:mb-8 text-center text-gray-800 text-sm sm:text-base px-4">Sign up to start storing and sharing your files securely.</p>
               <form className="w-full flex flex-col gap-3 sm:gap-4 animate-fade-in" onSubmit={handleSignUp} >
                 <input type="text" placeholder="Username" className="px-3 sm:px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base" 
                 value={formData.name} 
@@ -361,9 +361,10 @@ export default function Auth() {
             </div>
           </div>
         </div>
-        {/* Overlay Panel - slides left/right above forms */}
+        {/* Desktop Overlay Panel - slides left/right above forms */}
         <div className={`absolute top-0 left-0 w-full lg:w-1/2 h-full z-20 transition-transform duration-700 bg-blue-600 flex flex-col justify-center items-center
           ${isLogin ? 'translate-x-full lg:translate-x-full' : 'translate-x-0 lg:translate-x-0'}
+          hidden lg:flex // Hidden on small screens
         `}>
           <div className="flex flex-col justify-center items-center h-full p-4 sm:p-6 lg:p-10 text-white">
             <h2 className="text-2xl sm:text-3xl font-bold mb-4 text-center">{isLogin ? 'Welcome Back!' : 'Hello, Friend!'}</h2>
@@ -373,6 +374,27 @@ export default function Auth() {
             </p>
             <button
               className="bg-white text-blue-600 font-semibold px-6 sm:px-8 py-2 rounded-full shadow hover:bg-gray-100 transition-colors text-sm sm:text-base"
+              onClick={() => setIsLogin(!isLogin)}
+              type="button"
+            >
+              {isLogin ? 'Sign Up' : 'Sign In'}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Overlay Panel - slides top/bottom */}
+        <div className={`absolute top-0 left-0 w-full h-1/2 z-20 transition-transform duration-700 bg-blue-600 flex flex-col justify-center items-center
+          ${isLogin ? 'translate-y-full' : 'translate-y-0'}
+          lg:hidden // Only show on mobile
+        `}>
+          <div className="flex flex-col justify-center items-center h-full p-4 sm:p-6 text-white">
+            <h2 className="text-xl sm:text-2xl font-bold mb-3 text-center">{isLogin ? 'Welcome Back!' : 'Hello, Friend!'}</h2>
+            <p className="mb-4 text-sm sm:text-base text-center max-w-xs px-4">
+              {isLogin
+                ? 'To keep connected with us please login with your personal info.' : 'Enter your personal details and start your journey with us.'}
+            </p>
+            <button
+              className="bg-white text-blue-600 font-semibold px-4 sm:px-6 py-2 rounded-full shadow hover:bg-gray-100 transition-colors text-sm"
               onClick={() => setIsLogin(!isLogin)}
               type="button"
             >

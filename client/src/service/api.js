@@ -1,9 +1,8 @@
-import axios from 'axios'
-
-const API_URL = 'https://fileshare-t5vw.onrender.com/'
+import axios from 'axios';
+import { API_BASE_URL } from './config';
 
 export const api = axios.create({
-    baseURL: API_URL,
+    baseURL: API_BASE_URL,
     withCredentials: true
 });
 

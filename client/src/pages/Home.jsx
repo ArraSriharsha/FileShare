@@ -5,6 +5,7 @@ import { deleteFile, fetchFiles, renameFile, uploadFile } from '../service/api';
 import { Upload, Search, Filter, Grid, List } from 'lucide-react';
 import FileUpload from '../components/FileUpload.jsx';
 import SearchBar from '../components/SearchBar.jsx';
+import SharedFilePreview from '../components/SharedFilePreview';
 
 function Home() {
   const [files, setFiles] = useState([]);

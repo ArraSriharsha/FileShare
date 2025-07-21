@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Share2, Trash2, Edit2, Eye, File, Image, Video, Music, FileText, Copy, Check, X } from 'lucide-react';
 import { API_BASE_URL } from '../service/config';
+import { getShareLink } from '../service/api';
 
 // CodePreview component for better code file handling
 const CodePreview = ({ file }) => {
@@ -116,7 +117,9 @@ const FileGrid = ({ files, onFileDelete, onFileRename }) => {
 
   const handleShare = async (file) => {
     try {
-      await navigator.clipboard.writeText(file.shareLink);
+      const response = await getShareLink(file._id);
+      const link = response.data.shareLink;
+      await navigator.clipboard.writeText(link);
       setCopiedLink(file._id);
       setTimeout(() => setCopiedLink(null), 2000);
     } catch (err) {

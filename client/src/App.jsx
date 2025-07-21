@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Auth from './pages/Auth';
 import ProtectedRoute from './components/ProtectedRoute';
+import SharedFilePreview from './components/SharedFilePreview';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Home />
           </ProtectedRoute>
         } />
+        <Route path="/shared/:fileId" element={<SharedFilePreview />} />
       </Routes>
     </Router>
     </>

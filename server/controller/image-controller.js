@@ -234,5 +234,16 @@ const renameFile = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
-export { uploadFile, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile };
+const getFile = async (req, res) => {
+    try {
+        const file = await File.findById(req.params.fileId);
+        if (!file) {
+            return res.status(404).json({ success: false, message: 'File not found' });
+        }
+        res.status(200).json(file);
+    } catch (error) {
+        console.error('Error in getFile function', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+export { uploadFile, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile, getFile };

@@ -12,11 +12,9 @@ const SharedFilePreview = () => {
     const fetchFile = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${API_BASE_URL}/files`);
-        const files = await res.json();
-        const found = files.find(f => f._id === fileId);
-        if (!found) throw new Error('File not found');
-        setFile(found);
+        const res = await fetch(`${API_BASE_URL}/files/${fileId}`);
+        const file = await res.json();
+        setFile(file);
       } catch (err) {
         setError(err.message);
       } finally {

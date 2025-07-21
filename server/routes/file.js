@@ -1,5 +1,5 @@
 import express from 'express';
-import { uploadFile, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile } from '../controller/image-controller.js';
+import { uploadFile, getImage, previewFile, getShareLink, listFiles, deleteFile, renameFile, getFile } from '../controller/image-controller.js';
 import multer from 'multer';
 import protect from '../middleware/authMiddleware.js';
 
@@ -12,5 +12,5 @@ file.get("/files/:fileId/preview", previewFile);
 file.get("/share/:fileId", getShareLink);
 file.delete("/files/:fileId", protect, deleteFile);
 file.put("/files/:fileId", protect, renameFile);
-
+file.get("/files/:fileId", getFile);
 export default file;

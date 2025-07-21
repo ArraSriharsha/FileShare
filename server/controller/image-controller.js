@@ -142,6 +142,40 @@ const previewFile = async (req, res) => {
                 data += chunk.toString();
             }
             return res.send(data);
+        } else if (file.fileType && file.fileType.startsWith('video/')) {
+            // Handle video files with proper headers for mobile compatibility
+            res.setHeader('Content-Type', file.fileType);
+            res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+            res.setHeader('Accept-Ranges', 'bytes');
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
+            res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || 'https://www.airfetch.online');
+            res.setHeader('Access-Control-Allow-Credentials', 'true');
+            res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Range');
+            if (s3Response.Body instanceof stream.Readable) {
+                return s3Response.Body.pipe(res);
+            } else {
+                let data = Buffer.from([]);
+                for await (const chunk of s3Response.Body) {
+                    data = Buffer.concat([data, chunk]);
+                }
+                return res.end(data);
+            }
+        } else if (file.fileType && file.fileType.startsWith('audio/')) {
+            // Handle audio files with proper headers
+            res.setHeader('Content-Type', file.fileType);
+            res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+            res.setHeader('Accept-Ranges', 'bytes');
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
+            if (s3Response.Body instanceof stream.Readable) {
+                return s3Response.Body.pipe(res);
+            } else {
+                let data = Buffer.from([]);
+                for await (const chunk of s3Response.Body) {
+                    data = Buffer.concat([data, chunk]);
+                }
+                return res.end(data);
+            }
         } else {
             res.setHeader('Content-Type', file.fileType || 'application/octet-stream');
             if (s3Response.Body instanceof stream.Readable) {

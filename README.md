@@ -1,6 +1,7 @@
-# AirFetch
+# Air Fetch
 
 A modern, full-stack file sharing and storage platform.
+
 ![AirFetch Home Screenshot](./Home.png)
 
 <p align="center"><b>AirFetch Home - Modern, Responsive File Sharing</b></p>

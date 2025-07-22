@@ -133,6 +133,7 @@ const FileUpload = ({ onFileUpload }) => {
               <p className="text-gray-400 mb-3 sm:mb-4 text-sm sm:text-base">
                 Drag and drop files here, or click to select files
               </p>
+              <p className="text-xs text-red-400 mb-2">Maximum file size : 50MB per file</p>
               <div className="flex flex-wrap justify-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-500">
                 <span>Supports:</span>
                 <span className="px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-800 rounded text-xs">Images</span>

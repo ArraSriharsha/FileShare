@@ -6,6 +6,7 @@ const FileUpload = ({ onFileUpload }) => {
   const [uploadProgress, setUploadProgress] = useState({});
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const fileInputRef = useRef(null);
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
   const getFileIcon = (type) => {
     if (type.startsWith('image/')) return <Image className="w-5 h-5" />;
@@ -41,6 +42,12 @@ const FileUpload = ({ onFileUpload }) => {
   const handleFiles = useCallback(async (files) => {
     console.log('handleFiles called with:', files);
     const fileArray = Array.from(files);
+    // Check for files over 50MB
+    const largeFiles = fileArray.filter(file => file.size > MAX_FILE_SIZE);
+    if (largeFiles.length > 0) {
+      alert(`File(s) over 50MB detected: ${largeFiles.map(f => f.name).join(', ')}. Please select files under 50MB.`);
+      return;
+    }
     setUploadingFiles(fileArray);
 
     // Simulate upload progress for each file
